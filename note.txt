@@ -1,0 +1,3 @@
+✅ เป้าหมาย
+- ตรวจสอบสิทธิ์การใช้งานก่อนอนุญาตให้เชื่อมต่อ RDP ผ่าน Redemption
+- ตรวจสอบข้อมูล license: เช่น max_sessions, expiry_date, feature_flags, ฯลฯ
