@@ -277,7 +277,7 @@ class ACLPassthrough():
 
         kv = {}
 
-        # kv['is_rec'] = '1'  # Enable recording
+        kv['is_rec'] = '1'  # Enable recording
         kv['trace_type'] = '0'
         # kv['encryption_key'] = '1E' * 32  # 32 bytes string in hexadecimal format
         # kv['sign_key'] = '1E' * 32  # 32 bytes string in hexadecimal format

@@ -1,0 +1,22 @@
+networks : 
+  test :
+    driver : bridge
+services:
+  rdp_proxy : 
+      build : .
+      image : rdp_proxy:latest
+      container_name : rdp_proxy
+      ports :
+        - "3389:3389"
+      networks :
+        - test
+  rdp-target :
+    image: lscr.io/linuxserver/rdesktop:latest
+    container_name: rdesktop
+    environment :
+      - PUID=1000
+      - PGID=1000
+      - TZ=Asia/Bangkok
+    restart: unless-stopped
+    networks:
+      - test

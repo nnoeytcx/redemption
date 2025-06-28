@@ -17,6 +17,8 @@ COPY src /gcc/src
 COPY include /gcc/include
 COPY sys /gcc/sys
 # Build and install rdpproxy
+#FOR ARM vvvv
+#RUN bjam -s TARGET=arm variant=release -q --toolset=gcc \
 RUN bjam variant=release -q --toolset=gcc \
     cxx-lto=on \
     -s NO_FFMPEG=1 \
@@ -37,6 +39,7 @@ COPY --from=0 /usr/local /usr/local
 # Expose RDP Server port
 EXPOSE 3389
 # Copy container startup script
+COPY ./rdpproxy.ini /
 COPY ./start.sh /
 # Copy passthrough script
 COPY ./tools/passthrough /usr/local/share/passthrough/
