@@ -232,9 +232,12 @@ class ACLPassthrough():
     def start(self):
         self.shared.receive_data()
 
+        Logger().info("Starting ACL Passthrough")
+        print("Starting ACL Passthrough")
         device = "<host>$<application path>$<working dir>$<args> for Application"
         login = self.shared.get('login', MAGICASK) or MAGICASK
-        host = self.shared.get('real_target_device', MAGICASK) or MAGICASK
+        # host = self.shared.get('real_target_device', MAGICASK) or MAGICASK
+        host = "rdesktop"  # Default host for RDP
         password = self.shared.get('password', MAGICASK) or MAGICASK
         splitted = login.split('@', 1)
         if len(splitted) == 2:
@@ -254,6 +257,13 @@ class ACLPassthrough():
         kv = {}
 
         if MAGICASK in (device, login, host, password):
+            Logger().info("current values: device=%s" % device )
+            Logger().info("current values: login=%s" % login )
+            Logger().info("current values: host=%s" % host )
+            Logger().info("current values: password=%s" % password )
+            Logger().info("current values: interactive_data=%s" % interactive_data)
+
+            Logger().info("Asking for interactive data")
             self.interactive_target(interactive_data)
         else:
             self.shared.shared['login'] = login
@@ -295,6 +305,8 @@ class ACLPassthrough():
         kv['module'] = 'RDP' if self.shared.get('login') != 'internal' else host
         kv['target_password'] = self.shared.get('target_password')
         kv['target_login'] = self.shared.get('target_login')
+        # kv['target_host'] = self.shared.get('target_host')
+        # kv['target_device'] = self.shared.get('target_host')
         kv['target_host'] = self.shared.get('target_host')
         kv['target_device'] = self.shared.get('target_host')
         kv['mod_rdp:enable_kerberos'] = False
@@ -381,7 +393,7 @@ socket_path = '/tmp/redemption-sesman-sock'
 
 
 def standalone():
-    print('open socket at', socket_path)
+    print('open socket at passthrough', socket_path)
     signal.signal(signal.SIGCHLD, signal.SIG_IGN)
     if os.path.exists(socket_path):
         os.unlink(socket_path)

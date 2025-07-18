@@ -209,7 +209,7 @@ REDEMPTION_DIAGNOSTIC_POP()
             LOG(LOG_ERR, "Accept failed on socket %d (%s)", incoming_sck, strerror(errno));
             return;
         }
-
+        dprintf(2, "\n\n\naccepted socket %d\n\n\n", sck);
         const MonotonicTimePoint start_time = MonotonicTimePoint::clock::now();
 
         IpPort source_ip_port;
@@ -223,6 +223,8 @@ REDEMPTION_DIAGNOSTIC_POP()
         const auto source_port = source_ip_port.port();
         const bool is_ipv6 = source_ip_port.is_ipv6();
 
+       dprintf(2, "\n\n\nsource_ip=%s source_port=%d is_ipv6=%d\n\n\n",
+               source_ip.to_sv().data(), source_port, is_ipv6);
         using namespace std::string_view_literals;
         const bool source_is_localhost = source_ip.to_sv() == "127.0.0.1"sv
                                       || source_ip.to_sv() == "::1"sv;
@@ -257,6 +259,7 @@ REDEMPTION_DIAGNOSTIC_POP()
         }
 
         /* start new process */
+        dprintf(2, "\n\n\nfork\n\n\n");
         const pid_t pid = forkable ? fork() : 0;
         switch (pid) {
         case 0: /* child */ {
@@ -321,6 +324,7 @@ REDEMPTION_DIAGNOSTIC_POP()
             }
             else {
                 target_ip = target_ip_port.ip_address();
+                LOG(LOG_INFO, "target_ip='%s'", target_ip);
             }
 
             if (!prevent_early_log)
@@ -602,7 +606,9 @@ void redemption_main_loop(Inifile & ini, unsigned uid, unsigned gid, std::string
     const Font& font = font_data.font();
 
     TranslationCatalogs translation_catalogs;
+    dprintf(2, "\n\n\nbefore grapinc\n\n\n\n");
     init_translation(translation_catalogs);
+    dprintf(2, "\n\n\nafter grapinc\n\n\n\n");
 
     auto start_server = [&](int sck, SocketType socket_type){
         session_server_start(
@@ -614,6 +620,7 @@ void redemption_main_loop(Inifile & ini, unsigned uid, unsigned gid, std::string
 
     if (ini.get<cfg::websocket::enable_websocket>())
     {
+         dprintf(2, "\n\n\ncreate ws\n\n\n\n");
         unique_fd sck2 = create_ws_server(
             s_addr,
             ini.get<cfg::websocket::listen_address>(),
@@ -633,6 +640,7 @@ void redemption_main_loop(Inifile & ini, unsigned uid, unsigned gid, std::string
     }
     else
     {
+        dprintf(2, "\n\n\ncreate uniqa\n\n\n\n");
         unique_server_loop(std::move(sck1), [&](int sck)
         {
             ini_reloader.check_and_reload_ini();

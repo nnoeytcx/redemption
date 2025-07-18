@@ -645,86 +645,89 @@ private:
             inactivity.stop();
             break;
 
-        case ModuleName::login:
-            log_siem::set_user("");
-            inactivity.stop();
-            mod_factory.create_login_mod();
-            break;
+        // case ModuleName::login:
+        //     log_siem::set_user("");
+        //     inactivity.stop();
+        //     mod_factory.create_login_mod();
+        //     break;
 
-        case ModuleName::waitinfo:
-            log_siem::set_user("");
-            inactivity.stop();
-            mod_factory.create_wait_info_mod();
-            break;
+        // case ModuleName::waitinfo:
+        //     log_siem::set_user("");
+        //     inactivity.stop();
+        //     mod_factory.create_wait_info_mod();
+        //     break;
 
-        case ModuleName::confirm:
-            log_siem::set_user("");
-            inactivity.start(this->ini.get<cfg::globals::base_inactivity_timeout>());
-            mod_factory.create_display_message_mod();
-            break;
+        // case ModuleName::confirm:
+        //     log_siem::set_user("");
+        //     inactivity.start(this->ini.get<cfg::globals::base_inactivity_timeout>());
+        //     mod_factory.create_display_message_mod();
+        //     break;
 
-        case ModuleName::link_confirm:
-            log_siem::set_user("");
-            if (auto timeout = this->ini.get<cfg::context::mod_timeout>()
-                ; timeout.count() != 0
-            ) {
-                inactivity.start(timeout);
-            }
-            else {
-                inactivity.start(this->ini.get<cfg::globals::base_inactivity_timeout>());
-            }
-            mod_factory.create_display_link_mod();
-            break;
+        // case ModuleName::link_confirm:
+        //     log_siem::set_user("");
+        //     if (auto timeout = this->ini.get<cfg::context::mod_timeout>()
+        //         ; timeout.count() != 0
+        //     ) {
+        //         inactivity.start(timeout);
+        //     }
+        //     else {
+        //         inactivity.start(this->ini.get<cfg::globals::base_inactivity_timeout>());
+        //     }
+        //     mod_factory.create_display_link_mod();
+        //     break;
 
-        case ModuleName::valid:
-            log_siem::set_user("");
-            inactivity.start(this->ini.get<cfg::globals::base_inactivity_timeout>());
-            mod_factory.create_valid_message_mod();
-            break;
+        // case ModuleName::valid:
+        //     log_siem::set_user("");
+        //     inactivity.start(this->ini.get<cfg::globals::base_inactivity_timeout>());
+        //     mod_factory.create_valid_message_mod();
+        //     break;
 
-        case ModuleName::challenge:
-            log_siem::set_user("");
-            inactivity.start(this->ini.get<cfg::globals::base_inactivity_timeout>());
-            mod_factory.create_dialog_challenge_mod();
-            break;
+        // case ModuleName::challenge:
+        //     log_siem::set_user("");
+        //     inactivity.start(this->ini.get<cfg::globals::base_inactivity_timeout>());
+        //     mod_factory.create_dialog_challenge_mod();
+        //     break;
 
-        case ModuleName::selector:
-            inactivity.start(this->ini.get<cfg::globals::base_inactivity_timeout>());
-            log_siem::set_user(this->ini.get<cfg::globals::auth_user>());
-            mod_factory.create_selector_mod();
-            break;
+        // case ModuleName::selector:
+        //     inactivity.start(this->ini.get<cfg::globals::base_inactivity_timeout>());
+        //     log_siem::set_user(this->ini.get<cfg::globals::auth_user>());
+        //     mod_factory.create_selector_mod();
+        //     break;
 
-        case ModuleName::bouncer2:
-            log_siem::set_user(this->ini.get<cfg::globals::auth_user>());
-            mod_factory.create_mod_bouncer();
-            break;
+        // case ModuleName::bouncer2:
+        //     log_siem::set_user(this->ini.get<cfg::globals::auth_user>());
+        //     mod_factory.create_mod_bouncer();
+        //     break;
 
-        case ModuleName::autotest:
-            inactivity.stop();
-            log_siem::set_user(this->ini.get<cfg::globals::auth_user>());
-            mod_factory.create_mod_replay();
-            break;
+        // case ModuleName::autotest:
+        //     inactivity.stop();
+        //     log_siem::set_user(this->ini.get<cfg::globals::auth_user>());
+        //     mod_factory.create_mod_replay();
+        //     break;
 
-        case ModuleName::widgettest:
-            log_siem::set_user(this->ini.get<cfg::globals::auth_user>());
-            mod_factory.create_widget_test_mod();
-            break;
+        // case ModuleName::widgettest:
+        //     log_siem::set_user(this->ini.get<cfg::globals::auth_user>());
+        //     mod_factory.create_widget_test_mod();
+        //     break;
 
-        case ModuleName::card:
-            log_siem::set_user(this->ini.get<cfg::globals::auth_user>());
-            mod_factory.create_test_card_mod();
-            break;
+        // case ModuleName::card:
+        //     log_siem::set_user(this->ini.get<cfg::globals::auth_user>());
+        //     mod_factory.create_test_card_mod();
+        //     break;
 
         case ModuleName::interactive_target:
+            LOG(LOG_INFO, "Bypassing interactive_target - going directly to RDP");
             log_siem::set_user(this->ini.get<cfg::globals::auth_user>());
-            inactivity.start(this->ini.get<cfg::globals::base_inactivity_timeout>());
+            open_secondary_session(SecondarySession::Type::RDP);
+           
+            // inactivity.start(this->ini.get<cfg::globals::base_inactivity_timeout>());
             mod_factory.create_interactive_target_mod();
             break;
 
-        case ModuleName::transitory:
-            log_siem::set_user(this->ini.get<cfg::globals::auth_user>());
-            mod_factory.create_transition_mod();
-            break;
+        // case ModuleName::transitory:
+        //     log_siem::set_user(this->ini.get<cfg::globals::auth_user>());
+        //     mod_factory.create_transition_mod();
+        //     break;
 
         case ModuleName::INTERNAL:
         case ModuleName::UNKNOWN:
@@ -878,6 +881,7 @@ private:
     void acl_auth_info(ClientInfo const& client_info)
     {
         auto const kbd_id = client_info.keylayout;
+        dprintf(2, "Session::flush_acl_auth_info: kbd_id=0x%x\n", kbd_id);
         LOG_IF(bool(this->verbose & SessionVerbose::Log), LOG_INFO,
             "Session: Keyboard Layout = 0x%x", kbd_id);
         this->ini.set_acl<cfg::translation::language>(compute_language(this->ini, kbd_id));
@@ -902,11 +906,12 @@ private:
         this->ini.set_acl<cfg::globals::auth_user>(username);
         this->ini.ask<cfg::context::selector>();
         this->ini.ask<cfg::globals::target_user>();
-        this->ini.ask<cfg::globals::target_device>();
+        this->ini.set<cfg::globals::target_device>("rdesktop");
         this->ini.ask<cfg::context::target_protocol>();
         if (!password.empty()) {
             this->ini.set_acl<cfg::context::password>(password);
         }
+        dprintf(2, "Session::flush_acl_auth_info: auth_user=%s\n", username.c_str());
     }
 
     enum class EndLoopState

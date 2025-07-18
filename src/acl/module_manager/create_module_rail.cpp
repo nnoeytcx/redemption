@@ -18,6 +18,13 @@ Copyright (C) Wallix 2020
 Author(s): Proxy Team
 */
 
+/*
+ Factory function that creates and configures a RAIL (Remote Application Integrated Locally) module for the Redemption RDP proxy.
+ RAIL is a Microsoft RDP feature that allows running individual applications remotely instead of a full desktop session. 
+    Instead of seeing the entire remote desktop, users see only specific applications running seamlessly integrated into 
+    their local desktop environment.
+*/
+
 #include "acl/module_manager/create_module_rail.hpp"
 #include "mod/internal/rail_module_host_mod.hpp"
 #include "RAIL/client_execute.hpp"
