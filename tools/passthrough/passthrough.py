@@ -6,7 +6,7 @@
 # Allows RDPProxy to connect to any server RDP.
 ##
 
-import random
+import random,requests
 import os
 import signal
 import traceback
@@ -230,6 +230,7 @@ class ACLPassthrough():
             pass
 
     def start(self):
+        start = datetime.now()
         self.shared.receive_data()
 
         Logger().info("Starting ACL Passthrough")
@@ -237,7 +238,10 @@ class ACLPassthrough():
         device = "<host>$<application path>$<working dir>$<args> for Application"
         login = self.shared.get('login', MAGICASK) or MAGICASK
         # host = self.shared.get('real_target_device', MAGICASK) or MAGICASK
+        
+        # host = "104.214.171.65"  # Default host for RDP
         host = "rdesktop"  # Default host for RDP
+        # get host instead of default
         password = self.shared.get('password', MAGICASK) or MAGICASK
         splitted = login.split('@', 1)
         if len(splitted) == 2:
@@ -294,7 +298,7 @@ class ACLPassthrough():
 
         # kv['hash_path'] = '...'
         # kv['record_path'] = '...'
-        kv['record_subdirectory'] = now.strftime("%Y-%m-%d")
+        kv['record_subdirectory'] = now.strftime("%Y-%m")
         kv['record_filebase'] = now.strftime("%H:%M-") + session_id
         kv['session_log:enable_session_log_file'] = '0'
 
@@ -356,21 +360,44 @@ class ACLPassthrough():
             if DEBUG:
                 Logger().info("RDP/VNC connection terminated by client")
                 Logger().info("<<<<%s>>>>" % traceback.format_exc())
+                Logger().info("++++++++DEBUG : AuthentifierSocketClosed ++++++++")
+
         except Exception:
             if DEBUG:
                 Logger().info("RDP/VNC connection terminated by client")
                 Logger().info("<<<<%s>>>>" % traceback.format_exc())
+                Logger().info("++++++++DEBUG : Exception ++++++++")
+
 
         try:
+            stop = datetime.now()
+            duration = stop-start
             Logger().info("Close connection ...")
 
             self.proxy_conx.close()
+            Logger().info("++++++++DEBUG : self.proxy_conx.close() ++++++++")
+    
+            API_URL = "https://webhook.site/28e78777-be6b-4d9f-b868-1d59d7176fba"
+            data = {
+                "user": kv['login'],
+                "target": kv['target_host'],
+                "recording_path": f"/usr/local/etc/rdpproxy/var/recorded/rdp/{kv['record_subdirectory']}/{kv['record_filebase']}.mwrm",
+                #['record_subdirectory'] + '/' + kv['record_filebase']
+                "date": datetime.utcnow().strftime("%Y-%m-%d"),
+                "start": start.strftime("%H:%M:%S"),
+                "stop": stop.strftime("%H:%M:%S"),
+                "duration": str(duration)
+            }
+            response = requests.post(API_URL, json=data, timeout=5)
+            response.raise_for_status()
+            # Logger().info(response.json())
 
             Logger().info("Close connection done.")
         except IOError:
             if DEBUG:
                 Logger().info("Close connection: Exception")
                 Logger().info("<<<<%s>>>>" % traceback.format_exc())
+                Logger().info("++++++++DEBUG : IOError ++++++++")
     # END METHOD - START
 
     def kill_handler(self, signum, _frame):

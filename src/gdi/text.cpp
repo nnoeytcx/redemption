@@ -208,7 +208,7 @@ void MultiLineText::set_text(Font const& font, chars_view utf8_text)
             return;
         }
 
-        d.char_capacity = checked_int{utf8_text.size()};
+        d.char_capacity = checked_int<int>{utf8_text.size()};
     }
 
     /*
@@ -237,7 +237,7 @@ void MultiLineText::set_text(Font const& font, chars_view utf8_text)
         invalid_char
     );
 
-    d.nb_chars = checked_int{ch_it - chars_buf};
+    d.nb_chars = checked_int<int>{ch_it - chars_buf};
 }
 
 void MultiLineText::update_dimension(unsigned preferred_max_width) noexcept
@@ -279,8 +279,8 @@ Dimension MultiLineText::dimension() const noexcept
     auto n = d.nb_line;
     auto sep = n ? n * line_sep() : 0;
     return Dimension{
-        checked_int{max_width()},
-        checked_int{d.line_height * n + sep},
+        checked_int<int>{max_width()},
+        checked_int<int>{d.line_height * n + sep},
     };
 }
 
@@ -390,10 +390,10 @@ int draw_text(
                 w += fcs.back()->incby - fcs.back()->width;
             }
             Rect rect(
-                checked_int{px},
-                checked_int{y},
-                checked_int{w},
-                checked_int{max_height_text + padding.top + padding.bottom}
+                checked_int<int>{px},
+                checked_int<int>{y},
+                checked_int<int>{w},
+                checked_int<int>{max_height_text + padding.top + padding.bottom}
             );
             drawable.draw(RDPOpaqueRect(rect, bgcolor), clip, gdi::ColorCtx::depth24());
             return rect.intersect(clip).eright();

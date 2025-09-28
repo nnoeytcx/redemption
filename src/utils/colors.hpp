@@ -54,7 +54,7 @@ enum class NamedBGRColor : uint32_t {
     WINBLUE                   = 0x9C4D00,
 
     // used for theme
-    BG_BLUE                   = 0x601F08,
+    BG_BLUE                   = 0x854101,
     FOCUS_BLUE                = WINBLUE,
 
     RED                       = 0x0000ff,

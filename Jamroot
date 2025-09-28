@@ -201,13 +201,19 @@ install install-lib
     ;
 
 
+
 exe redrec
 :
     $(REDEMPTION_SRC_PATH)/main/redrec.cpp
     libredrec
 :
     $(EXE_DEPENDENCIES)
+    <library>avcodec
+    <library>avformat
+    <library>avutil
+    <library>swscale
 ;
+
 
 
 ## ppocr resources {

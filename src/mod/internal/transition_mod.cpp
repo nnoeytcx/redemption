@@ -54,7 +54,7 @@ void TransitionMod::rdp_input_invalidate(Rect r)
             clip
         );
 
-        Rect area(checked_int{x}, checked_int{y}, checked_int{width}, checked_int{height});
+        Rect area(checked_int<int>{x}, checked_int<int>{y}, checked_int<int>{width}, checked_int<int>{height});
         gdi_draw_border(
             drawable, border_color, area, border_len, clip, gdi::ColorCtx::depth24()
         );

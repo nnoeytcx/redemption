@@ -2,6 +2,9 @@ FROM ubuntu:latest
 # Install build dependencies
 RUN apt-get -qq update && apt-get install -y g++ libboost-tools-dev libssl-dev libkrb5-dev \
     libgssglue-dev libsnappy-dev libpng-dev libbz2-dev libhyperscan-dev python3 gettext
+# RUN apt-get install -y libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libx264-dev
+RUN apt-get -qq update && apt-get install -y python3-requests
+
 # Create build directory
 RUN mkdir -p /gcc/
 # Set container working directory
@@ -34,6 +37,9 @@ RUN bjam variant=release -q --toolset=gcc \
 FROM ubuntu:latest
 # Install runtime dependencies
 RUN apt-get -qq update && apt-get install -y libgssapi-krb5-2 libpng16-16 libsnappy1v5 python3 libhyperscan5
+# RUN apt-get install -y libavcodec-dev libavformat-dev libavutil-dev libswscale-dev libx264-dev
+RUN apt-get -qq update && apt-get install -y python3-requests
+
 # Copy built rdpproxy
 COPY --from=0 /usr/local /usr/local
 # Expose RDP Server port
